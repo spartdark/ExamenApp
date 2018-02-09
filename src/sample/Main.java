@@ -7,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sample.ejercicio2.Cliente;
 import sample.ejercicio2.CuentaBancaria;
+import sample.ejercicio4.ConnectionSQL;
+
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -18,6 +21,11 @@ public class Main extends Application {
         CuentaBancaria cuenta = new CuentaBancaria("123456-7", (float) 10500.75);
         Cliente cliente = new Cliente("Juan Perez", cuenta);
         System.out.println(cliente.obtenerDatosCuenta());
+        try {
+            new ConnectionSQL();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

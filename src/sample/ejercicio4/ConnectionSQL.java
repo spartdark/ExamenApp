@@ -1,10 +1,12 @@
 package sample.ejercicio4;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.*;
 
 
 /**
@@ -14,38 +16,51 @@ import java.sql.Statement;
  **/
 public class ConnectionSQL {
 
-    // Create a variable for the connection string.
-    String connectionUrl = "jdbc:sqlserver://45.40.139.98; databaseName=test; user=AdminBD_des; password=Desa#0216;";
+    private Connection conn = null;
 
-    // Declare the JDBC objects.
-    Connection con = null;
-    Statement stmt = null;
-    ResultSet rs = null;
+    public ConnectionSQL() throws IOException {
 
-    public static void main(String[] args) {
-        new ConnectionSQL().connection();
-    }
+        String query = "SELECT E.ID_ESTADO,ISNULL (SUM(NUMERO_EMPLEADOS),0) AS NUMERO_EMPLEADOS, E.NOMBRE FROM ESTADOS E\n" +
+                "LEFT JOIN PLANTAS P ON P.ID_ESTADO = E.ID_ESTADO\n" +
+                "GROUP BY E.ID_ESTADO ,E.NOMBRE\n" +
+                "ORDER BY NUMERO_EMPLEADOS DESC;";
 
-    public void connection() {
+        Statement st;
         try {
-            // Establish the connection.
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            con = DriverManager.getConnection(connectionUrl);
+            File reporte = new File("reporte.txt");
+            FileWriter writeReporte = new FileWriter(reporte, true);
 
-            // Create and execute an SQL statement that returns some data.
-            String SQL = "SELECT TOP 10 * FROM Person.Contact";
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(SQL);
+            String urlConn = "jdbc:sqlserver://45.40.139.98; databaseName=test; user=AdminBD_des; password=Desa#0216;";
+            conn = DriverManager.getConnection(urlConn);
 
-            // Iterate through the data in the result set and display it.
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            String ln = System.getProperty("line.separator");
+            StringBuffer strReporte = new StringBuffer();
+            strReporte.append(StringUtils.rightPad("ID_ESTADO", 10));
+            strReporte.append(StringUtils.rightPad("NUMERO_EMPLEADOS", 20));
+            strReporte.append(StringUtils.rightPad("NOMBRE", 100));
+            strReporte.append(ln);
+
             while (rs.next()) {
-                System.out.println(rs.getString(4) + " " + rs.getString(6));
-            }
-        } catch (Exception e)
+                String ID_ESTADO = rs.getString("ID_ESTADO");
+                String NUMERO_EMPLEADOS = rs.getString("NUMERO_EMPLEADOS");
+                String NOMBRE = rs.getString("NOMBRE");
 
-        {
+                strReporte.append(StringUtils.rightPad(ID_ESTADO + ",", 10));
+                strReporte.append(StringUtils.rightPad(NUMERO_EMPLEADOS + ",", 20));
+                strReporte.append(StringUtils.rightPad(NOMBRE, 100));
+                strReporte.append(ln);
+            }
+            System.out.println(strReporte);
+            writeReporte.write(strReporte.toString());
+            writeReporte.close();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
 
 }

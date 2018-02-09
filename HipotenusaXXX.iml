@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="mssql-jdbc-6.2.2.jre8" level="project" />
     <orderEntry type="library" name="mssql-jdbc-6.2.2.jre7" level="project" />
+    <orderEntry type="library" name="xmlbeans-xpath-2.6.0" level="project" />
+    <orderEntry type="library" name="common-lang3" level="project" />
   </component>
 </module>
